@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.support.annotation.AnimatorRes;
 import android.support.annotation.DrawableRes;
-import android.support.v4.view.PagerAdapter;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
@@ -14,8 +13,8 @@ import android.view.View;
 import android.view.animation.Interpolator;
 import android.widget.LinearLayout;
 import com.baiiu.autoloopviewpager.AutoLoopViewPager;
-import com.baiiu.autoloopviewpager.interfaces.IRealAdapter;
 import com.baiiu.autoloopviewpager.R;
+import com.baiiu.autoloopviewpager.interfaces.ILoopViewPager;
 import com.baiiu.autoloopviewpager.interfaces.IPageIndicator;
 
 /**
@@ -141,11 +140,16 @@ public class AnimatorCircleIndicator extends LinearLayout implements IPageIndica
             throw new IllegalStateException("you must initial the viewpager with adapter");
         }
 
-        int initialPosition;
+        int initialPosition = 0;
 
-        viewPager.removeOnPageChangeListener(this);
-        viewPager.addOnPageChangeListener(this);
-        initialPosition = viewPager.getCurrentItem();
+        if (viewPager instanceof ILoopViewPager) {
+            ILoopViewPager loopViewPage = (ILoopViewPager) viewPager;
+            loopViewPage.addOnIndicatorPageChangeListener(this);
+            initialPosition = loopViewPage.getRealCurrentItem();
+        } else {
+            viewPager.removeOnPageChangeListener(this);
+            viewPager.addOnPageChangeListener(this);
+        }
 
         this.mViewPager = viewPager;
 
@@ -251,12 +255,13 @@ public class AnimatorCircleIndicator extends LinearLayout implements IPageIndica
         }
 
         try {
-            PagerAdapter adapter = mViewPager.getAdapter();
-            if (adapter instanceof IRealAdapter) {
-                return ((IRealAdapter) adapter).getRealCount();
+            if (mViewPager instanceof ILoopViewPager) {
+                return ((ILoopViewPager) mViewPager).getRealCount();
+            } else {
+                return mViewPager.getAdapter()
+                        .getCount();
             }
 
-            return adapter.getCount();
         } catch (Exception e) {
             Log.e(getClass().getSimpleName(), e.toString());
             return 0;

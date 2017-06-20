@@ -5,12 +5,11 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.support.v4.view.PagerAdapter;
 import android.util.AttributeSet;
 import android.view.View;
 import com.baiiu.autoloopviewpager.AutoLoopViewPager;
-import com.baiiu.autoloopviewpager.interfaces.IRealAdapter;
 import com.baiiu.autoloopviewpager.R;
+import com.baiiu.autoloopviewpager.interfaces.ILoopViewPager;
 import com.baiiu.autoloopviewpager.interfaces.IPageIndicator;
 
 /**
@@ -216,9 +215,14 @@ public class SimpleCircleIndicator extends View implements IPageIndicator {
 
         int initialPosition = 0;
 
-        initialPosition = viewPager.getCurrentItem();
-        viewPager.removeOnPageChangeListener(this);
-        viewPager.addOnPageChangeListener(this);
+        if (viewPager instanceof ILoopViewPager) {
+            ILoopViewPager loopViewPage = (ILoopViewPager) viewPager;
+            loopViewPage.addOnIndicatorPageChangeListener(this);
+            initialPosition = loopViewPage.getRealCurrentItem();
+        } else {
+            viewPager.removeOnPageChangeListener(this);
+            viewPager.addOnPageChangeListener(this);
+        }
 
         this.mViewPager = viewPager;
 
@@ -250,11 +254,12 @@ public class SimpleCircleIndicator extends View implements IPageIndicator {
 
         try {
             if (mViewPager == null) return 0;
-            PagerAdapter adapter = mViewPager.getAdapter();
-            if (adapter instanceof IRealAdapter) {
-                count = ((IRealAdapter) adapter).getRealCount();
+            
+            if (mViewPager instanceof ILoopViewPager) {
+                return ((ILoopViewPager) mViewPager).getRealCount();
             } else {
-                count = adapter.getCount();
+                return mViewPager.getAdapter()
+                        .getCount();
             }
 
         } catch (Exception e) {

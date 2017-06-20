@@ -2,7 +2,7 @@ package com.baiiu.autoloopviewpager;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import com.baiiu.autoloopviewpager.autoscroll.AutoScrollViewPager;
+import com.baiiu.autoloopviewpager.loopvp.LoopingViewPager;
 
 
 /**
@@ -13,7 +13,7 @@ import com.baiiu.autoloopviewpager.autoscroll.AutoScrollViewPager;
  * 1. 添加自定义属性,可以控制宽高.该属性使用RatioFrameLayout替代
  * 2. to be continued
  */
-public class AutoLoopViewPager extends AutoScrollViewPager {
+public class AutoLoopViewPager extends LoopingViewPager {
 
     public AutoLoopViewPager(Context context) {
         this(context, null);

@@ -4,11 +4,11 @@ import android.content.Context;
 import android.support.v4.view.PagerAdapter;
 import android.view.View;
 import android.view.ViewGroup;
-import com.baiiu.autoloopviewpager.interfaces.IRealAdapter;
+import com.baiiu.autoloopviewpager.interfaces.ILoopWrapperAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class BaseLoopPagerAdapter<T> extends PagerAdapter implements IRealAdapter {
+public abstract class BaseLoopPagerAdapter<T> extends PagerAdapter implements ILoopWrapperAdapter {
 
     protected boolean mCopyTwo = false;
     public List<T> mList = new ArrayList<>();
@@ -65,6 +65,13 @@ public abstract class BaseLoopPagerAdapter<T> extends PagerAdapter implements IR
 
     @Override public void destroyItem(ViewGroup container, int position, Object object) {
         container.removeView((View) object);
+    }
+
+    /**
+     * 必须要复写
+     */
+    public int getItemPosition(Object object) {
+        return POSITION_NONE;
     }
 
 }

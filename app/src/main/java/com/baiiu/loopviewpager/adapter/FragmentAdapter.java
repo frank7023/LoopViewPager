@@ -3,7 +3,7 @@ package com.baiiu.loopviewpager.adapter;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import com.baiiu.autoloopviewpager.interfaces.IRealAdapter;
+import com.baiiu.autoloopviewpager.interfaces.ILoopWrapperAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,9 +20,9 @@ import java.util.List;
  * 具体请看:
  * <a href="http://www.trinea.cn/android/android-source-code-analysis/multi-viewpager-to-fragment-not-init/">Trina的文章</>
  */
-public class FragmentAdapter extends FragmentStatePagerAdapter implements IRealAdapter {
+public class FragmentAdapter extends FragmentStatePagerAdapter implements ILoopWrapperAdapter {
 
-    private List<Integer> list;
+    private List<Integer> mList;
     private boolean mCopyTwo = false;
 
     public FragmentAdapter(FragmentManager fm, List<Integer> list) {
@@ -38,8 +38,10 @@ public class FragmentAdapter extends FragmentStatePagerAdapter implements IRealA
 
         if (list.size() == 2) {
             mCopyTwo = true;
-            this.list.addAll(new ArrayList<>(list));
-            this.list.addAll(new ArrayList<>(list));
+            this.mList = list;
+            this.mList.addAll(new ArrayList<>(list));
+        } else {
+            this.mList = list;
         }
 
 
@@ -47,11 +49,12 @@ public class FragmentAdapter extends FragmentStatePagerAdapter implements IRealA
     }
 
     @Override public Fragment getItem(int position) {
-        return ImageFragment.instance(list.get(position));
+        //// TODO: 17/6/20 需要toRealPostion
+        return ImageFragment.instance(mList.get(position));
     }
 
     @Override public int getCount() {
-        return list.size();
+        return mList.size();
     }
 
     /**

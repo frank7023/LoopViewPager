@@ -2,9 +2,10 @@ package com.baiiu.autoloopviewpager.interfaces;
 
 /**
  * author: baiiu
- * date: on 16/6/21 15:16
+ * date: on 16/3/28 15:33
  * description:
  */
-public interface IRealAdapter {
+public interface ILoopWrapperAdapter {
     int getRealCount();
+    //PagerAdapter getRealAdapter();
 }

@@ -26,13 +26,12 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.v4.view.PagerAdapter;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 import com.baiiu.autoloopviewpager.AutoLoopViewPager;
-import com.baiiu.autoloopviewpager.interfaces.IRealAdapter;
 import com.baiiu.autoloopviewpager.R;
+import com.baiiu.autoloopviewpager.interfaces.ILoopViewPager;
 import com.baiiu.autoloopviewpager.interfaces.IPageIndicator;
 
 /**
@@ -71,7 +70,7 @@ public class LinePageIndicator extends View implements IPageIndicator {
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public LinePageIndicator(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
-        init(context,attrs);
+        init(context, attrs);
     }
 
     private void init(Context context, AttributeSet attrs) {
@@ -206,8 +205,14 @@ public class LinePageIndicator extends View implements IPageIndicator {
 
         int initialPosition = 0;
 
-        viewPager.addOnPageChangeListener(this);
-        initialPosition = viewPager.getCurrentItem();
+        if (viewPager instanceof ILoopViewPager) {
+            ILoopViewPager loopViewPage = (ILoopViewPager) viewPager;
+            loopViewPage.addOnIndicatorPageChangeListener(this);
+            initialPosition = loopViewPage.getRealCurrentItem();
+        } else {
+            viewPager.removeOnPageChangeListener(this);
+            viewPager.addOnPageChangeListener(this);
+        }
 
         this.mViewPager = viewPager;
         setCurrentItem(initialPosition);
@@ -239,12 +244,12 @@ public class LinePageIndicator extends View implements IPageIndicator {
         }
 
         try {
-            PagerAdapter adapter = mViewPager.getAdapter();
-            if (adapter instanceof IRealAdapter) {
-                return ((IRealAdapter) adapter).getRealCount();
+            if (mViewPager instanceof ILoopViewPager) {
+                return ((ILoopViewPager) mViewPager).getRealCount();
+            } else {
+                return mViewPager.getAdapter()
+                        .getCount();
             }
-
-            return adapter.getCount();
         } catch (Exception e) {
             Log.e(getClass().getSimpleName(), e.toString());
             return 0;
